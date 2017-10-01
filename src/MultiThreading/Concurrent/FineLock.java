@@ -1,23 +1,21 @@
-package Tmax.Concurrent;
+package MultiThreading.Concurrent;
 
-import Tmax.Station;
-import Util.Common;
+import MultiThreading.Station;
+import MultiThreading.Common;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.Integer.parseInt;
 
-public class CoarseLock implements Runnable {
+public class FineLock implements Runnable {
     private Thread t;
     private String name;
     private List<String> rows;
-    private final static Map<String, Station> sharedCount
-            = Collections.synchronizedMap(new HashMap<>());
+    private final static Map<String, Station> sharedCount = new ConcurrentHashMap<>();
 
-    CoarseLock(String name, List<String> rows) {
+    FineLock(String name, List<String> rows) {
         this.name = name;
         this.rows = rows;
 
@@ -46,12 +44,12 @@ public class CoarseLock implements Runnable {
                 if(cells[3].isEmpty())
                     continue;
 
-                synchronized (sharedCount) {
-                    if(sharedCount.containsKey(cells[0])) {
+                if(!sharedCount.containsKey(cells[0])) {
+                    Station newStation = new Station(cells[0], parseInt(cells[3]));
+                    sharedCount.putIfAbsent(cells[0], newStation);
+                } else {
+                    synchronized (sharedCount.get(cells[0])) {
                         sharedCount.get(cells[0]).addToSum(parseInt(cells[3]));
-                    } else {
-                        Station newStation = new Station(cells[0], parseInt(cells[3]));
-                        sharedCount.put(cells[0], newStation);
                     }
                 }
             }

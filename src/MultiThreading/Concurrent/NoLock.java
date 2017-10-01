@@ -1,30 +1,27 @@
-package Tmax.Concurrent;
+package MultiThreading.Concurrent;
 
-import Tmax.Station;
-import Util.Common;
+import MultiThreading.Station;
+import MultiThreading.Common;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.Integer.parseInt;
 
-public class FineLock implements Runnable {
+public class NoLock implements Runnable{
     private Thread t;
     private String name;
     private List<String> rows;
-    private final static Map<String, Station> sharedCount = new ConcurrentHashMap<>();
+    private static Map<String, Station> sharedCount = new HashMap<>();
 
-    FineLock(String name, List<String> rows) {
+    NoLock(String name, List<String> rows) {
         this.name = name;
         this.rows = rows;
 
         //System.out.println("Creating: " + this.name);
     }
 
-    /**
-     * Compute final averages and print result.
-     */
     void printCountMap() {
         Common.printMap(sharedCount);
     }
@@ -45,12 +42,9 @@ public class FineLock implements Runnable {
                     continue;
 
                 if(!sharedCount.containsKey(cells[0])) {
-                    Station newStation = new Station(cells[0], parseInt(cells[3]));
-                    sharedCount.putIfAbsent(cells[0], newStation);
+                    sharedCount.put(cells[0], new Station(cells[0], parseInt(cells[3])));
                 } else {
-                    synchronized (sharedCount.get(cells[0])) {
-                        sharedCount.get(cells[0]).addToSum(parseInt(cells[3]));
-                    }
+                    sharedCount.get(cells[0]).addToSum(parseInt(cells[3]));
                 }
             }
         }
@@ -58,6 +52,9 @@ public class FineLock implements Runnable {
         //System.out.println("Thread " + name + " exiting.");
     }
 
+    /**
+     * Start a thread.
+     */
     void start() {
         //System.out.println("Starting: " + name);
 
@@ -67,6 +64,9 @@ public class FineLock implements Runnable {
         }
     }
 
+    /**
+     * Wait for other threads to complete.
+     */
     void join() {
         //System.out.println("Waiting: " + name);
         try {
