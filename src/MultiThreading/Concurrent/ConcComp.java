@@ -1,4 +1,4 @@
-package Tmax.Concurrent;
+package MultiThreading.Concurrent;
 
 import java.util.List;
 

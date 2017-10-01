@@ -1,4 +1,4 @@
-package Tmax;
+package MultiThreading;
 
 /**
  * Station Class

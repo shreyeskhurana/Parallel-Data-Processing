@@ -14,7 +14,7 @@ public class FileHandler {
      *             Type: String
      *             Location of the file on the machine
      */
-    public static List<String> readFile(String path) {
+    public static List<String> readCsv(String path) {
         long startTime = System.currentTimeMillis();
 
         System.out.println("File being read: " + path);
